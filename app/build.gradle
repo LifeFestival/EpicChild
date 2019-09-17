@@ -29,6 +29,7 @@ dependencies {
     def coroutinesVersion = "1.3.1"
     def offsetDateTimeVersion = "1.2.1"
     def loggerVersion = "2.2.0"
+    def gsonVersion = "2.8.5"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -52,4 +53,9 @@ dependencies {
 
     //Logger
     implementation "com.orhanobut:logger:$loggerVersion"
+    implementation 'androidx.recyclerview:recyclerview:1.0.0'
+    implementation 'com.google.android.material:material:1.0.0'
+
+    // GSON
+    implementation "com.google.code.gson:gson:$gsonVersion"
 }

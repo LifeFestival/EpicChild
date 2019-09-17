@@ -1,7 +1,8 @@
-package com.example.epicchild
+package com.example.epicchild.Activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import com.example.epicchild.R
 
 class EpicListActivity : AppCompatActivity() {
 
