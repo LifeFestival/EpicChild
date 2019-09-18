@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.epicchild.dataBase.Epic
 import java.util.*
 
+@Dao
 interface EpicDao {
 
     @Query("""SELECT * FROM epic""")

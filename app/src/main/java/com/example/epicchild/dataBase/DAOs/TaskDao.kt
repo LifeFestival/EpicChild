@@ -4,6 +4,7 @@ import androidx.room.*
 import com.example.epicchild.dataBase.Task
 import java.util.*
 
+@Dao
 interface TaskDao {
 
     @Query("""SELECT * FROM task WHERE epicId = :epicId""")

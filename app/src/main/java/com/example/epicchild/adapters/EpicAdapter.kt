@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
 import com.example.epicchild.dataBase.Epic
@@ -29,7 +30,7 @@ class EpicAdapter(private val epicList: List<Epic>, private val context: Context
     inner class EpicViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         init {
-            view.setOnClickListener {  }
+            view.setOnClickListener { Toast.makeText(context, "Выбрал эпик!", Toast.LENGTH_SHORT).show() }
         }
 
         val nameTextView: TextView = view.findViewById(R.id.epic_item_name_textView)
