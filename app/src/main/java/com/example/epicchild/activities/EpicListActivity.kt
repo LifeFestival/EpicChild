@@ -1,4 +1,4 @@
-package com.example.epicchild.Activities
+package com.example.epicchild.activities
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
