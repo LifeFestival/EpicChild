@@ -21,4 +21,10 @@ interface EpicDao {
 
     @Delete
     abstract suspend fun deleteEpic(epic: Epic)
+
+    @Delete
+    abstract suspend fun deleteEpics(epics: List<Epic>)
+
+    @Query("""DELETE FROM epic""")
+    abstract suspend fun deleteAllEpics()
 }

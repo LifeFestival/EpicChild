@@ -1,61 +1,106 @@
 package com.example.epicchild.activities
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Context
 import android.os.Bundle
-import android.widget.Adapter
+import android.widget.EditText
+import android.widget.Toast
+import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
 import com.example.epicchild.adapters.EpicAdapter
-import com.example.epicchild.dataBase.AppDatabase
-import com.example.epicchild.dataBase.Epic
-import com.example.epicchild.dataBase.Task
-import com.jakewharton.threetenabp.AndroidThreeTen
-import kotlinx.android.synthetic.main.activity_epic.*
+import com.example.epicchild.viewModels.EpicListViewModel
 import kotlinx.android.synthetic.main.activity_epic_list.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 
 class EpicListActivity : AppCompatActivity() {
 
+    private val job = Job()
+    private val scope = CoroutineScope(Dispatchers.Main + job)
+
+    //Компоненты
     private lateinit var epicListAdapter: EpicAdapter
-    private lateinit var appDataBase: AppDatabase
+    private val viewModel by viewModels<EpicListViewModel>()
+
+    //Диалог
+    private lateinit var epicCreatingDialog: AlertDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_epic_list)
 
-        AndroidThreeTen.init(this)
+        GlobalScope.launch(Dispatchers.Main) {
 
-        appDataBase = AppDatabase.getInstance(this)
-
-        GlobalScope.launch{
-
-            withContext(Dispatchers.IO) {
-                insertTestData(5)
-                initAdapter()
-            }
+            initAdapter()
+            makeEpicCreatingDialog()
+            setListeners()
         }
     }
 
     private suspend fun initAdapter() {
 
-        val testList = appDataBase.epicDao().getAllEpics()
+        withContext(Dispatchers.IO) {
+            val testList = viewModel.insertTestData(10)
+            epicListAdapter = EpicAdapter(testList, this@EpicListActivity)
+        }
 
-        epicListAdapter = EpicAdapter(testList, this)
         epic_list_recycler.adapter = epicListAdapter
-        epic_list_recycler.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
+        epic_list_recycler.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
         epic_list_recycler.layoutManager = LinearLayoutManager(this)
 
     }
 
-    private suspend fun insertTestData(dataAmount: Int) {
-        for (i in 0..dataAmount) {
-            val name = "Epic number ${i + 1}"
-            appDataBase.epicDao().insertEpic(Epic(name, ""))
+    private fun setListeners() {
+        epic_list_add_button.setOnClickListener {
+            epicCreatingDialog.show()
         }
+    }
+
+
+    private fun makeEpicCreatingDialog() {
+        val builder = AlertDialog.Builder(this)
+
+        epicCreatingDialog = builder.setTitle("Название Эпика")
+            .setView(layoutInflater.inflate(R.layout.dialog_epic_creating, epic_list_root, false))
+            .setNegativeButton(android.R.string.cancel) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+            }
+            .setPositiveButton(android.R.string.ok) { dialogInterface, _ ->
+
+                val epicName = epicCreatingDialog.findViewById<EditText>(R.id.epic_dialog_editText)?.text.toString()
+
+                if (epicName.isEmpty()) {
+                    showToast("Имя эпика не может быть пустым")
+                } else {
+                    GlobalScope.launch(Dispatchers.IO) {
+                        runCatching { viewModel.saveEpic(epicName) }
+                            .onSuccess {
+                                showToast("Эпик создан")
+                                dialogInterface.dismiss()
+                            }
+                            .onFailure {
+                                showToast("Эпик не был создан")
+                                dialogInterface.dismiss()
+                            }
+                    }
+                }
+            }
+            .create()
+    }
+
+    private fun showToast(message: String, length: Int = Toast.LENGTH_SHORT) {
+        Toast.makeText(this, message, length).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        job.cancel()
     }
 }

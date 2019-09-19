@@ -10,19 +10,12 @@ const val TASK_TABLE_NAME = "task"
 
 @Entity(tableName = EPIC_TABLE_NAME)
 data class Epic(
-
     var name: String,
-
     var description: String?,
-
     var isFinished: Boolean = false,
-
     val dateOfCreating: OffsetDateTime = OffsetDateTime.now(),
-
     var dateOfChanging: OffsetDateTime = OffsetDateTime.now(),
-
     var numberOfTasks: Int = 0,
-
     var numberOfCompletedTasks: Int = 0,
 
     @PrimaryKey
@@ -31,13 +24,9 @@ data class Epic(
 
 @Entity(tableName = TASK_TABLE_NAME)
 data class Task(
-
     var name: String,
-
     val epicId: UUID,
-
     var isFinished: Boolean = false,
-
     val dateOfCreating: OffsetDateTime = OffsetDateTime.now(),
 
     @PrimaryKey

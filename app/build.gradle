@@ -32,6 +32,8 @@ dependencies {
     def offsetDateTimeVersion = "1.2.1"
     def loggerVersion = "2.2.0"
     def gsonVersion = "2.8.5"
+    def lifecycleVersion = "2.2.0-alpha04"
+    def fragmentKtxVersion = "1.1.0-beta01"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -60,4 +62,12 @@ dependencies {
 
     // GSON
     implementation "com.google.code.gson:gson:$gsonVersion"
+
+    //lifeCycle
+    implementation "androidx.lifecycle:lifecycle-extensions:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
+
+    //UI
+    implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
 }
