@@ -1,15 +1,21 @@
 package com.example.epicchild.viewModels
 
 import android.app.Application
-import android.content.Context
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.example.epicchild.dataBase.AppDatabase
 import com.example.epicchild.dataBase.Epic
 import com.jakewharton.threetenabp.AndroidThreeTen
 
-class EpicListViewModel(application: Application): AndroidViewModel(application) {
+class EpicListViewModel(application: Application) : AndroidViewModel(application) {
 
     private lateinit var appDatabase: AppDatabase
+
+    //Лайв дата
+    private val _epicLiveData = MutableLiveData<Epic>()
+    val epicLiveData: LiveData<Epic>
+        get() = _epicLiveData
 
     init {
         initComponents()
@@ -18,6 +24,7 @@ class EpicListViewModel(application: Application): AndroidViewModel(application)
     private fun initComponents() {
         AndroidThreeTen.init(getApplication())
         appDatabase = AppDatabase.getInstance(getApplication())
+
     }
 
     suspend fun getEpics(): List<Epic> = appDatabase.epicDao().getAllEpics()
@@ -27,6 +34,7 @@ class EpicListViewModel(application: Application): AndroidViewModel(application)
         val epic = Epic(name, "")
 
         appDatabase.epicDao().insertEpic(epic)
+        _epicLiveData.postValue(epic)
     }
 
     //TODO убрать генерацию

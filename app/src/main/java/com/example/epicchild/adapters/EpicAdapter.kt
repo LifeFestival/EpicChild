@@ -10,13 +10,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
 import com.example.epicchild.dataBase.Epic
 
-class EpicAdapter(private val epicList: List<Epic>, private val context: Context) : RecyclerView.Adapter<EpicAdapter.EpicViewHolder>() {
+class EpicAdapter(epicList: List<Epic>, private val context: Context) : RecyclerView.Adapter<EpicAdapter.EpicViewHolder>() {
 
-    override fun getItemCount(): Int = epicList.count()
+    private val mEpicList = epicList.toMutableList()
+
+    override fun getItemCount(): Int = mEpicList.count()
 
     override fun onBindViewHolder(holder: EpicViewHolder, position: Int) {
 
-        val element = epicList[position]
+        val element = mEpicList[position]
         val counterString = "${element.numberOfCompletedTasks}/${element.numberOfTasks}"
 
         holder.nameTextView.text = element.name
@@ -36,5 +38,16 @@ class EpicAdapter(private val epicList: List<Epic>, private val context: Context
         val nameTextView: TextView = view.findViewById(R.id.epic_item_name_textView)
         val counterTextView: TextView = view.findViewById(R.id.epic_item_counter_textView)
 
+    }
+
+    fun add(epic: Epic) {
+        mEpicList.add(epic)
+        notifyDataSetChanged()
+    }
+
+    fun addAll(epicList: List<Epic>) {
+        mEpicList.clear()
+        mEpicList.addAll(epicList)
+        notifyDataSetChanged()
     }
 }

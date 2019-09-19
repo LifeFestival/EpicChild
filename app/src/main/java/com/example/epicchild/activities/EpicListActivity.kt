@@ -1,20 +1,23 @@
 package com.example.epicchild.activities
 
-import android.content.Context
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.epicchild.R
 import com.example.epicchild.adapters.EpicAdapter
+import com.example.epicchild.dataBase.Epic
 import com.example.epicchild.viewModels.EpicListViewModel
 import kotlinx.android.synthetic.main.activity_epic_list.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class EpicListActivity : AppCompatActivity() {
 
@@ -25,6 +28,13 @@ class EpicListActivity : AppCompatActivity() {
     //Диалог
     private lateinit var epicCreatingDialog: AlertDialog
 
+    //Обсервер
+    private val epicListNewTaskObserver = Observer<Epic> {
+        if (it == null) return@Observer
+
+        epicListAdapter.add(it)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_epic_list)
@@ -34,13 +44,15 @@ class EpicListActivity : AppCompatActivity() {
             makeEpicCreatingDialog()
             setListeners()
         }
+
+        viewModel.epicLiveData.observe(this, epicListNewTaskObserver)
     }
 
     private suspend fun initAdapter() {
 
         withContext(Dispatchers.IO) {
-            val testList = viewModel.insertTestData(10)
-            epicListAdapter = EpicAdapter(testList, this@EpicListActivity)
+            val epicList = viewModel.getEpics()
+            epicListAdapter = EpicAdapter(epicList, this@EpicListActivity)
         }
 
         epic_list_recycler.adapter = epicListAdapter
@@ -87,11 +99,10 @@ class EpicListActivity : AppCompatActivity() {
                     viewModel.viewModelScope.launch(Dispatchers.IO) {
                         runCatching { viewModel.saveEpic(epicName) }
                             .onSuccess {
-                                withContext(Dispatchers.Main) { showToast("Эпик создан") }
                                 epicCreatingDialog.dismiss()
                             }
                             .onFailure {
-                                withContext(Dispatchers.Main) { showToast("Эпик не был создан") }
+                                withContext(Dispatchers.Main) { showToast("Эпик не был создан: ${it.localizedMessage}") }
                                 epicCreatingDialog.dismiss()
                             }
                     }

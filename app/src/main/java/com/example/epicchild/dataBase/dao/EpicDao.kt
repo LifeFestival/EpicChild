@@ -1,4 +1,4 @@
-package com.example.epicchild.dataBase.DAOs
+package com.example.epicchild.dataBase.dao
 
 import androidx.room.*
 import com.example.epicchild.dataBase.Epic
