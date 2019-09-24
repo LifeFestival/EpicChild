@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.activity_epic_list.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 
 class EpicListActivity : AppCompatActivity() {
 
@@ -48,11 +49,17 @@ class EpicListActivity : AppCompatActivity() {
         viewModel.epicLiveData.observe(this, epicListNewTaskObserver)
     }
 
+    //Заряжаю адаптер
     private suspend fun initAdapter() {
 
         withContext(Dispatchers.IO) {
             val epicList = viewModel.getEpics()
-            epicListAdapter = EpicAdapter(epicList, this@EpicListActivity)
+            epicListAdapter = EpicAdapter(
+                epicList,
+                this@EpicListActivity,
+                this@EpicListActivity::startEpicActivity,
+                this@EpicListActivity::enterDeletingMode
+                )
         }
 
         epic_list_recycler.adapter = epicListAdapter
@@ -113,5 +120,14 @@ class EpicListActivity : AppCompatActivity() {
 
     private fun showToast(message: String, length: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(this, message, length).show()
+    }
+
+    private fun startEpicActivity(epicId: UUID) {
+
+        startActivity(EpicActivity.newIntent(this, epicId))
+    }
+
+    private fun enterDeletingMode() {
+        Toast.makeText(this, "long click", Toast.LENGTH_SHORT).show()
     }
 }

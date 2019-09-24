@@ -37,17 +37,4 @@ class EpicListViewModel(application: Application) : AndroidViewModel(application
         _epicLiveData.postValue(epic)
     }
 
-    //TODO убрать генерацию
-    suspend fun insertTestData(dataAmount: Int): List<Epic> {
-
-        appDatabase.epicDao().deleteAllEpics()
-
-        for (i in 0..dataAmount) {
-            val name = "Epic number ${i + 1}"
-            appDatabase.epicDao().insertEpic(Epic(name, ""))
-        }
-
-        return appDatabase.epicDao().getAllEpics()
-    }
-
 }
