@@ -103,7 +103,7 @@ class EpicActivity : AppCompatActivity() {
 
     //TODO удаление тасок
     private fun enterDeletingMode() {
-        Toast.makeText(this, "Режим удаления", Toast.LENGTH_SHORT).show()
+        showToast("Режим удаления")
     }
 
     private fun makeTaskCreatingDialog() {

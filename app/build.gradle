@@ -34,6 +34,7 @@ dependencies {
     def gsonVersion = "2.8.5"
     def lifecycleVersion = "2.2.0-alpha04"
     def fragmentKtxVersion = "1.1.0-beta01"
+    def stethoVersion = "1.5.1"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -70,4 +71,8 @@ dependencies {
 
     //UI
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
+
+    // Stetho
+    implementation "com.facebook.stetho:stetho:$stethoVersion"
+    implementation "com.facebook.stetho:stetho-okhttp3:$stethoVersion"
 }

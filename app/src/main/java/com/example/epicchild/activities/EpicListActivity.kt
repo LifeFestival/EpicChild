@@ -121,11 +121,10 @@ class EpicListActivity : AppCompatActivity() {
     }
 
     private fun startEpicActivity(epicId: UUID) {
-
         startActivity(EpicActivity.newIntent(this, epicId))
     }
 
     private fun enterDeletingMode() {
-        Toast.makeText(this, "Режим удаления", Toast.LENGTH_SHORT).show()
+        showToast("Режим удаления")
     }
 }
