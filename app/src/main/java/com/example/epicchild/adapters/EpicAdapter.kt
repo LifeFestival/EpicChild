@@ -1,12 +1,9 @@
 package com.example.epicchild.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
@@ -15,9 +12,8 @@ import java.util.*
 
 class EpicAdapter(
     epicList: List<Epic>,
-    private val context: Context,
-    private val itemClickListener: (epicId: UUID) -> Unit,
-    private val itemLongClickListener: () -> Unit
+    private val itemClick: (epicId: UUID) -> Unit,
+    private val itemLongClick: () -> Unit
 ) : RecyclerView.Adapter<EpicAdapter.EpicViewHolder>() {
 
     private val mEpicList = epicList.toMutableList()
@@ -34,9 +30,9 @@ class EpicAdapter(
 
         //Listeners
         holder.root.apply {
-            setOnClickListener { itemClickListener(element.id) }
+            setOnClickListener { itemClick(element.id) }
             setOnLongClickListener {
-                itemLongClickListener
+                itemLongClick
                 true
             }
         }
@@ -44,7 +40,7 @@ class EpicAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EpicViewHolder {
         return EpicViewHolder(
-            LayoutInflater.from(context).inflate(
+            LayoutInflater.from(parent.context).inflate(
                 R.layout.epic_item_layout,
                 parent,
                 false
@@ -53,12 +49,6 @@ class EpicAdapter(
     }
 
     inner class EpicViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-
-        init {
-            view.setOnClickListener {
-                Toast.makeText(context, "Выбрал эпик!", Toast.LENGTH_SHORT).show()
-            }
-        }
 
         val nameTextView: TextView = view.findViewById(R.id.epic_item_name_textView)
         val counterTextView: TextView = view.findViewById(R.id.epic_item_counter_textView)

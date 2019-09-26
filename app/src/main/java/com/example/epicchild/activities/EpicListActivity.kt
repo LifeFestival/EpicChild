@@ -56,7 +56,6 @@ class EpicListActivity : AppCompatActivity() {
             val epicList = viewModel.getEpics()
             epicListAdapter = EpicAdapter(
                 epicList,
-                this@EpicListActivity,
                 this@EpicListActivity::startEpicActivity,
                 this@EpicListActivity::enterDeletingMode
                 )
@@ -97,8 +96,7 @@ class EpicListActivity : AppCompatActivity() {
 
             val button = epicCreatingDialog.getButton(AlertDialog.BUTTON_POSITIVE)
             button.setOnClickListener {
-                val epicName = epicCreatingDialog.findViewById<EditText>(R.id.epic_dialog_editText)
-                    ?.text.toString()
+                val epicName = editText?.text.toString()
 
                 if (epicName.isEmpty()) {
                     showToast("Имя эпика не может быть пустым")
@@ -128,6 +126,6 @@ class EpicListActivity : AppCompatActivity() {
     }
 
     private fun enterDeletingMode() {
-        Toast.makeText(this, "long click", Toast.LENGTH_SHORT).show()
+        Toast.makeText(this, "Режим удаления", Toast.LENGTH_SHORT).show()
     }
 }

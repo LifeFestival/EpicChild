@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">EpicChild</string>
+    <string name="epic_description_hint">Нажмите чтобы ввести описание</string>
 </resources>
