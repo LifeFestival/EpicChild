@@ -22,7 +22,11 @@ class EpicViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun getAllTasks(epicId: UUID) = appDatabase.taskDao().getTaskByEpicId(epicId)
 
+    suspend fun getTaskById(taskId: UUID) = appDatabase.taskDao().getTaskById(taskId)
+
     suspend fun updateEpic(epic: Epic) = appDatabase.epicDao().updateEpic(epic)
+
+    suspend fun updateTask(task: Task) = appDatabase.taskDao().updateTask(task)
 
     suspend fun saveNewTask(taskName: String, epicId: UUID) {
         val newTask = Task(

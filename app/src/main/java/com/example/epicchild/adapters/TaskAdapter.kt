@@ -9,11 +9,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
 import com.example.epicchild.dataBase.Task
+import java.util.*
 
 
 class TaskAdapter(
     taskList: List<Task>,
-    private val itemLongClick: () -> Unit
+    private val itemLongClick: () -> Unit,
+    private val itemFinished: (taskId: UUID, isChecked: Boolean) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val mTaskList = taskList.toMutableList()
@@ -30,6 +32,10 @@ class TaskAdapter(
         holder.root.setOnLongClickListener {
             itemLongClick()
             true
+        }
+
+        holder.finishCheckBox.setOnCheckedChangeListener { _, isChecked ->
+            itemFinished(element.id, isChecked)
         }
     }
 
@@ -51,6 +57,11 @@ class TaskAdapter(
 
     fun addAll(taskList: List<Task>) {
         mTaskList.addAll(taskList)
+        notifyDataSetChanged()
+    }
+
+    fun setElementFinished(elementId: UUID, isFinished: Boolean) {
+        mTaskList.find { it.id == elementId }?.isFinished = isFinished
         notifyDataSetChanged()
     }
 }

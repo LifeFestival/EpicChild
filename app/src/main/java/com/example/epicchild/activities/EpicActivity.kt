@@ -86,7 +86,7 @@ class EpicActivity : AppCompatActivity() {
                 }
             }
 
-        epic_add_button.setOnClickListener {
+        task_add_button.setOnClickListener {
             taskCreatingDialog.show()
         }
     }
@@ -95,7 +95,11 @@ class EpicActivity : AppCompatActivity() {
 
         withContext(Dispatchers.IO) {
             val taskList = viewModel.getAllTasks(epicId)
-            tasksAdapter = TaskAdapter(taskList, this@EpicActivity::taskItemLongClick)
+            tasksAdapter = TaskAdapter(
+                taskList,
+                this@EpicActivity::enterDeletingMode,
+                this@EpicActivity::setTaskFinished
+                )
         }
 
         epic_recycler.adapter = tasksAdapter
@@ -109,15 +113,24 @@ class EpicActivity : AppCompatActivity() {
         epic_recycler.layoutManager = LinearLayoutManager(this)
     }
 
-    private fun taskItemClick(u: UUID) {}
-
-    private fun taskItemLongClick() {
-        enterDeletingMode()
-    }
-
     //TODO удаление тасок
     private fun enterDeletingMode() {
         showToast("Режим удаления")
+    }
+
+    private fun setTaskFinished(taskId: UUID, isFinished: Boolean) {
+        viewModel.viewModelScope.launch {
+            val task = viewModel.getTaskById(taskId)
+            task.isFinished = isFinished
+
+            if (isFinished) epic.numberOfCompletedTasks += 1
+            else epic.numberOfCompletedTasks -= 1
+
+            viewModel.updateTask(task)
+            viewModel.updateEpic(epic)
+
+            tasksAdapter.setElementFinished(taskId, isFinished)
+        }
     }
 
     private fun makeTaskCreatingDialog() {
