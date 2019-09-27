@@ -9,12 +9,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.epicchild.R
-import com.example.epicchild.adapters.EpicAdapter
+import com.example.epicchild.adapters.TaskAdapter
 import com.example.epicchild.dataBase.Epic
+import com.example.epicchild.dataBase.Task
 import com.example.epicchild.viewModels.EpicViewModel
 import kotlinx.android.synthetic.main.activity_epic.*
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +39,14 @@ class EpicActivity : AppCompatActivity() {
     //Диалог
     private lateinit var taskCreatingDialog: AlertDialog
 
-    private lateinit var tasksAdapter: EpicAdapter
+    //Обсервер
+    private val newTaskObserver = Observer<Task> {
+        if (it == null ) return@Observer
+
+        tasksAdapter.add(it)
+    }
+
+    private lateinit var tasksAdapter: TaskAdapter
 
     private val viewModel by viewModels<EpicViewModel>()
 
@@ -51,13 +60,14 @@ class EpicActivity : AppCompatActivity() {
             epic = viewModel.getEpic(epicId)
             withContext(Dispatchers.Main) {
                 setEpicInfo(epic)
+                initAdapter()
             }
 
             makeTaskCreatingDialog()
             setListeners()
-            initAdapter()
-
         }
+
+        viewModel.taskLiveData.observe(this, newTaskObserver)
     }
 
     private fun setEpicInfo(epic: Epic) {
@@ -81,8 +91,12 @@ class EpicActivity : AppCompatActivity() {
         }
     }
 
-    private fun initAdapter() {
-        tasksAdapter = EpicAdapter(listOf(), this::taskItemClick, this::taskItemLongClick)
+    private suspend fun initAdapter() {
+
+        withContext(Dispatchers.IO) {
+            val taskList = viewModel.getAllTasks(epicId)
+            tasksAdapter = TaskAdapter(taskList, this@EpicActivity::taskItemLongClick)
+        }
 
         epic_recycler.adapter = tasksAdapter
         epic_recycler.addItemDecoration(
@@ -129,7 +143,9 @@ class EpicActivity : AppCompatActivity() {
                     showToast("Имя задания не может быть пустым")
                 } else {
                     viewModel.viewModelScope.launch(Dispatchers.IO) {
-                        runCatching { viewModel.saveTask(taskName, epicId) }
+                        runCatching {
+                            viewModel.saveNewTask(taskName, epicId)
+                        }
                             .onSuccess {
                                 taskCreatingDialog.dismiss()
                             }

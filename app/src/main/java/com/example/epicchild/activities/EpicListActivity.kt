@@ -30,7 +30,7 @@ class EpicListActivity : AppCompatActivity() {
     private lateinit var epicCreatingDialog: AlertDialog
 
     //Обсервер
-    private val epicListNewTaskObserver = Observer<Epic> {
+    private val epicListNewEpicObserver = Observer<Epic> {
         if (it == null) return@Observer
 
         epicListAdapter.add(it)
@@ -46,7 +46,7 @@ class EpicListActivity : AppCompatActivity() {
             setListeners()
         }
 
-        viewModel.epicLiveData.observe(this, epicListNewTaskObserver)
+        viewModel.epicLiveData.observe(this, epicListNewEpicObserver)
     }
 
     //Заряжаю адаптер
@@ -126,5 +126,14 @@ class EpicListActivity : AppCompatActivity() {
 
     private fun enterDeletingMode() {
         showToast("Режим удаления")
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        viewModel.viewModelScope.launch {
+            val epics = viewModel.getEpics()
+            epicListAdapter.addAll(epics)
+        }
     }
 }
