@@ -13,10 +13,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
-        android:textSize="16sp"
         tools:text="Название эпика"
         android:maxLines="2"
         android:gravity="center"
+        style="@style/TextViewSecondaryStyle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/epic_item_complete_imageView"
         app:layout_constraintStart_toStartOf="parent"
@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/btn_star_big_on" />
+        app:srcCompat="@drawable/ic_sleeping" />
 
     <TextView
         android:id="@+id/epic_item_counter_textView"
@@ -39,6 +39,7 @@
         android:layout_marginTop="2dp"
         android:layout_marginBottom="2dp"
         android:textSize="12sp"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/epic_item_complete_imageView"
         app:layout_constraintStart_toStartOf="@+id/epic_item_complete_imageView"
