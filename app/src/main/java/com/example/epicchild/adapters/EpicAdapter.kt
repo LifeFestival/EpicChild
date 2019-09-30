@@ -1,8 +1,10 @@
 package com.example.epicchild.adapters
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +30,13 @@ class EpicAdapter(
         holder.nameTextView.text = element.name
         holder.counterTextView.text = counterString
 
+        when {
+            element.numberOfCompletedTasks == 0 -> holder.iconView.setImageResource(R.drawable.ic_sleeping)
+            element.numberOfCompletedTasks == element.numberOfTasks -> holder.iconView.setImageResource(R.drawable.ic_rowing)
+
+            else -> holder.iconView.setImageResource(R.drawable.ic_done_outline)
+        }
+
         //Listeners
         holder.root.apply {
             setOnClickListener { itemClick(element.id) }
@@ -52,6 +61,7 @@ class EpicAdapter(
 
         val nameTextView: TextView = view.findViewById(R.id.epic_item_name_textView)
         val counterTextView: TextView = view.findViewById(R.id.epic_item_counter_textView)
+        val iconView: ImageView = view.findViewById(R.id.epic_item_complete_imageView)
         val root: ConstraintLayout = view.findViewById(R.id.epic_item_root)
 
     }
