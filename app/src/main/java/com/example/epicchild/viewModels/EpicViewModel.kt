@@ -16,6 +16,10 @@ class EpicViewModel(application: Application) : AndroidViewModel(application) {
     val taskLiveData: LiveData<Task>
         get() = _taskLiveData
 
+    private val _epicLiveData = MutableLiveData<Epic>()
+    val epicLiveData: LiveData<Epic>
+        get() = _epicLiveData
+
     private val appDatabase: AppDatabase = AppDatabase.getInstance(getApplication())
 
     suspend fun getEpic(epicId: UUID) = appDatabase.epicDao().getEpicById(epicId)
@@ -38,7 +42,9 @@ class EpicViewModel(application: Application) : AndroidViewModel(application) {
 
         appDatabase.taskDao().insertTask(newTask)
         appDatabase.epicDao().updateEpic(epic)
+
         _taskLiveData.postValue(newTask)
+        _epicLiveData.postValue(epic)
     }
 
 }

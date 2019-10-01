@@ -15,7 +15,7 @@ import java.util.*
 class TaskAdapter(
     taskList: List<Task>,
     private val itemLongClick: () -> Unit,
-    private val itemFinished: (taskId: UUID, isChecked: Boolean) -> Unit
+    private val itemFinished: (taskId: UUID, isChecked: Boolean, position: Int) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val mTaskList = taskList.toMutableList()
@@ -34,8 +34,9 @@ class TaskAdapter(
             true
         }
 
-        holder.finishCheckBox.setOnCheckedChangeListener { _, isChecked ->
-            itemFinished(element.id, isChecked)
+        holder.finishCheckBox.setOnClickListener {
+            itemFinished(element.id, !element.isFinished, position)
+            mTaskList[position].isFinished = !element.isFinished
         }
     }
 
@@ -56,12 +57,8 @@ class TaskAdapter(
     }
 
     fun addAll(taskList: List<Task>) {
+        mTaskList.clear()
         mTaskList.addAll(taskList)
-        notifyDataSetChanged()
-    }
-
-    fun setElementFinished(elementId: UUID, isFinished: Boolean) {
-        mTaskList.find { it.id == elementId }?.isFinished = isFinished
         notifyDataSetChanged()
     }
 }
