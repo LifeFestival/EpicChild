@@ -32,9 +32,9 @@ class EpicAdapter(
 
         when {
             element.numberOfCompletedTasks == 0 -> holder.iconView.setImageResource(R.drawable.ic_sleeping)
-            element.numberOfCompletedTasks == element.numberOfTasks -> holder.iconView.setImageResource(R.drawable.ic_rowing)
+            element.numberOfCompletedTasks == element.numberOfTasks -> holder.iconView.setImageResource(R.drawable.ic_done_outline)
 
-            else -> holder.iconView.setImageResource(R.drawable.ic_done_outline)
+            else -> holder.iconView.setImageResource(R.drawable.ic_rowing)
         }
 
         //Listeners

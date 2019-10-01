@@ -41,9 +41,15 @@ class EpicActivity : AppCompatActivity() {
 
     //Обсервер
     private val newTaskObserver = Observer<Task> {
-        if (it == null ) return@Observer
+        if (it == null) return@Observer
 
         tasksAdapter.add(it)
+    }
+
+    private val epicUpdateObserver = Observer<Epic> {
+        if (it == null) return@Observer
+
+        epic = it
     }
 
     private lateinit var tasksAdapter: TaskAdapter
@@ -68,6 +74,7 @@ class EpicActivity : AppCompatActivity() {
         }
 
         viewModel.taskLiveData.observe(this, newTaskObserver)
+        viewModel.epicLiveData.observe(this, epicUpdateObserver)
     }
 
     private fun setEpicInfo(epic: Epic) {
@@ -79,7 +86,8 @@ class EpicActivity : AppCompatActivity() {
         epic_description_editText.onFocusChangeListener =
             View.OnFocusChangeListener { _, isFocus ->
                 if (!isFocus) {
-                    val changedEpic = epic.copy(description = epic_description_editText.text.toString())
+                    val changedEpic =
+                        epic.copy(description = epic_description_editText.text.toString())
                     viewModel.viewModelScope.launch {
                         viewModel.updateEpic(changedEpic)
                     }
@@ -99,7 +107,7 @@ class EpicActivity : AppCompatActivity() {
                 taskList,
                 this@EpicActivity::enterDeletingMode,
                 this@EpicActivity::setTaskFinished
-                )
+            )
         }
 
         epic_recycler.adapter = tasksAdapter
@@ -118,7 +126,7 @@ class EpicActivity : AppCompatActivity() {
         showToast("Режим удаления")
     }
 
-    private fun setTaskFinished(taskId: UUID, isFinished: Boolean) {
+    private fun setTaskFinished(taskId: UUID, isFinished: Boolean, position: Int) {
         viewModel.viewModelScope.launch {
             val task = viewModel.getTaskById(taskId)
             task.isFinished = isFinished
@@ -129,12 +137,12 @@ class EpicActivity : AppCompatActivity() {
             viewModel.updateTask(task)
             viewModel.updateEpic(epic)
 
-            tasksAdapter.setElementFinished(taskId, isFinished)
+            tasksAdapter.notifyItemChanged(position)
         }
     }
 
     private fun makeTaskCreatingDialog() {
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogCustom)
 
         taskCreatingDialog = builder.setTitle("Название Задания")
             .setView(layoutInflater.inflate(R.layout.dialog_task_creating, epic_root, false))

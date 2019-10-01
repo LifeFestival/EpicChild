@@ -80,7 +80,7 @@ class EpicListActivity : AppCompatActivity() {
 
 
     private fun makeEpicCreatingDialog() {
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.AlertDialogCustom)
 
         epicCreatingDialog = builder.setTitle("Название Эпика")
             .setView(layoutInflater.inflate(R.layout.dialog_epic_creating, epic_list_root, false))
