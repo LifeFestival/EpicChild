@@ -1,11 +1,31 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="CheckBoxStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:buttonTint">@color/colorGreenDark</item>
+    </style>
+
+    <style name="TextViewMainStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="TextViewSecondaryStyle" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="AlertDialogCustom" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:colorAccent">@color/colorPrimaryDark</item>
+        <item name="android:textColor">@color/colorPrimary</item>
     </style>
 
 </resources>
