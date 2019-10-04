@@ -134,6 +134,7 @@ class EpicListActivity : AppCompatActivity() {
         startActivity(EpicActivity.newIntent(this, epicId))
     }
 
+    //TODO удаление эпиков
     private fun enterDeletingMode() {
         showToast("Режим удаления")
     }
