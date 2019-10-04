@@ -192,4 +192,15 @@ class EpicActivity : AppCompatActivity() {
     private fun showToast(message: String, length: Int = Toast.LENGTH_SHORT) {
         Toast.makeText(this, message, length).show()
     }
+
+    override fun onPause() {
+        super.onPause()
+
+        val desc = epic_description_editText.text.toString()
+
+        epic.description = desc
+        viewModel.viewModelScope.launch(Dispatchers.IO) {
+            viewModel.updateEpic(epic)
+        }
+    }
 }
