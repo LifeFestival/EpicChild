@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
 import com.example.epicchild.adapters.TaskAdapter
 import com.example.epicchild.dataBase.Epic
@@ -97,6 +98,14 @@ class EpicActivity : AppCompatActivity() {
         task_add_button.setOnClickListener {
             taskCreatingDialog.show()
         }
+
+        epic_recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && task_add_button.visibility == View.VISIBLE) task_add_button.hide()
+                else if (dy < 0 && task_add_button.visibility != View.VISIBLE) task_add_button.show()
+            }
+        })
     }
 
     private suspend fun initAdapter() {

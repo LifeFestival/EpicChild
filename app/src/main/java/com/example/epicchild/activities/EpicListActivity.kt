@@ -1,6 +1,7 @@
 package com.example.epicchild.activities
 
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -10,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.epicchild.R
 import com.example.epicchild.adapters.EpicAdapter
 import com.example.epicchild.dataBase.Epic
@@ -76,6 +78,14 @@ class EpicListActivity : AppCompatActivity() {
         epic_list_add_button.setOnClickListener {
             epicCreatingDialog.show()
         }
+        
+        epic_list_recycler.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 0 && epic_list_add_button.visibility == View.VISIBLE) epic_list_add_button.hide()
+                else if (dy < 0 && epic_list_add_button.visibility != View.VISIBLE) epic_list_add_button.show()
+            }
+        })
     }
 
 
