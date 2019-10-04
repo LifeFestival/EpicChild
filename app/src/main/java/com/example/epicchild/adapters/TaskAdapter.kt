@@ -19,6 +19,7 @@ class TaskAdapter(
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val mTaskList = taskList.toMutableList()
+    var isDeletingMode = false
 
     override fun getItemCount(): Int = mTaskList.count()
 

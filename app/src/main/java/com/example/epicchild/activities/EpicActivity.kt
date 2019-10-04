@@ -37,6 +37,10 @@ class EpicActivity : AppCompatActivity() {
     private lateinit var epicId: UUID
     private lateinit var epic: Epic
 
+    //Режим удаления
+    private var isDeletingMode = false
+    private val deletionList = mutableListOf<Task>()
+
     //Диалог
     private lateinit var taskCreatingDialog: AlertDialog
 
@@ -132,7 +136,16 @@ class EpicActivity : AppCompatActivity() {
 
     //TODO удаление тасок
     private fun enterDeletingMode() {
-        showToast("Режим удаления")
+        tasksAdapter.isDeletingMode = true
+    }
+
+    private fun addTaskToDeleting(task: Task) {
+        deletionList.add(task)
+    }
+
+    private suspend fun deleteTasks() {
+        viewModel.deleteTasks(deletionList)
+        tasksAdapter.isDeletingMode = false
     }
 
     private fun setTaskFinished(taskId: UUID, isFinished: Boolean, position: Int) {
