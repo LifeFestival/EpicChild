@@ -38,7 +38,6 @@ class EpicActivity : AppCompatActivity() {
     private lateinit var epic: Epic
 
     //Режим удаления
-    private var isDeletingMode = false
     private val deletionList = mutableListOf<Task>()
 
     //Диалог
