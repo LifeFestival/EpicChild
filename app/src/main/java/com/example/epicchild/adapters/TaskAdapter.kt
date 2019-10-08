@@ -1,5 +1,6 @@
 package com.example.epicchild.adapters
 
+import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,8 @@ class TaskAdapter(
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val mTaskList = taskList.toMutableList()
+    private val mTaskDeletionList = mutableListOf<Task>()
+
     var isDeletingMode = false
 
     override fun getItemCount(): Int = mTaskList.count()
@@ -38,6 +41,16 @@ class TaskAdapter(
         holder.finishCheckBox.setOnClickListener {
             itemFinished(element.id, !element.isFinished, position)
             mTaskList[position].isFinished = !element.isFinished
+        }
+
+        holder.root.setOnClickListener {
+            if (isDeletingMode && !mTaskDeletionList.contains(element)) {
+                mTaskDeletionList.add(element)
+                holder.root.setBackgroundResource(R.drawable.background_purple_borders)
+            } else if (isDeletingMode && mTaskDeletionList.contains(element)) {
+                mTaskDeletionList.remove(element)
+                holder.root.setBackgroundResource(R.drawable.background_normal)
+            }
         }
     }
 
@@ -60,6 +73,15 @@ class TaskAdapter(
     fun addAll(taskList: List<Task>) {
         mTaskList.clear()
         mTaskList.addAll(taskList)
+        notifyDataSetChanged()
+    }
+
+    fun deleteElements(taskList: List<Task>) {
+        mTaskDeletionList.forEach { task ->
+            if (mTaskList.contains(task)) {
+                mTaskList.remove(task)
+            }
+        }
         notifyDataSetChanged()
     }
 }

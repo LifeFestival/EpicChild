@@ -37,9 +37,6 @@ class EpicActivity : AppCompatActivity() {
     private lateinit var epicId: UUID
     private lateinit var epic: Epic
 
-    //Режим удаления
-    private val deletionList = mutableListOf<Task>()
-
     //Диалог
     private lateinit var taskCreatingDialog: AlertDialog
 
@@ -138,13 +135,16 @@ class EpicActivity : AppCompatActivity() {
         tasksAdapter.isDeletingMode = true
     }
 
-    private fun addTaskToDeleting(task: Task) {
-        deletionList.add(task)
+    //TODO выход из режима удаления
+    private fun leaveDeletingMode() {
+        tasksAdapter.isDeletingMode = false
     }
 
-    private suspend fun deleteTasks() {
-        viewModel.deleteTasks(deletionList)
-        tasksAdapter.isDeletingMode = false
+    private fun deleteTasks(taskList: List<Task>) {
+        viewModel.viewModelScope.launch(Dispatchers.IO) {
+            viewModel.deleteTasks(taskList)
+            tasksAdapter.deleteElements(taskList)
+        }
     }
 
     private fun setTaskFinished(taskId: UUID, isFinished: Boolean, position: Int) {
@@ -214,5 +214,11 @@ class EpicActivity : AppCompatActivity() {
         viewModel.viewModelScope.launch(Dispatchers.IO) {
             viewModel.updateEpic(epic)
         }
+    }
+
+    override fun onBackPressed() {
+        if (tasksAdapter.isDeletingMode) {
+            tasksAdapter.isDeletingMode = false
+        } else super.onBackPressed()
     }
 }
