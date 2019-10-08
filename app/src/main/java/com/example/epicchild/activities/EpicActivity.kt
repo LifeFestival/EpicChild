@@ -130,20 +130,33 @@ class EpicActivity : AppCompatActivity() {
         epic_recycler.layoutManager = LinearLayoutManager(this)
     }
 
-    //TODO удаление тасок
     private fun enterDeletingMode() {
-        tasksAdapter.isDeletingMode = true
+        tasksAdapter.enterDeletingMode()
+        floatDeletingMode(true)
     }
 
-    //TODO выход из режима удаления
-    private fun leaveDeletingMode() {
-        tasksAdapter.isDeletingMode = false
-    }
-
-    private fun deleteTasks(taskList: List<Task>) {
+    private fun deleteTasks() {
         viewModel.viewModelScope.launch(Dispatchers.IO) {
+
+            val taskList = tasksAdapter.deletingElements
+
+            withContext(Dispatchers.Main) {
+                tasksAdapter.deleteElements()
+            }
+
             viewModel.deleteTasks(taskList)
-            tasksAdapter.deleteElements(taskList)
+
+            floatDeletingMode(false)
+        }
+    }
+
+    private fun floatDeletingMode(isDeletingMode: Boolean) {
+        if (!isDeletingMode) {
+            task_add_button.setImageResource(R.drawable.ic_add)
+            task_add_button.setOnClickListener { taskCreatingDialog.show() }
+        } else {
+            task_add_button.setImageResource(R.drawable.ic_delete)
+            task_add_button.setOnClickListener { deleteTasks() }
         }
     }
 
@@ -218,7 +231,8 @@ class EpicActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (tasksAdapter.isDeletingMode) {
-            tasksAdapter.isDeletingMode = false
+            tasksAdapter.disableDeletingMode()
+            floatDeletingMode(false)
         } else super.onBackPressed()
     }
 }

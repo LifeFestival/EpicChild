@@ -1,6 +1,5 @@
 package com.example.epicchild.adapters
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +23,12 @@ class TaskAdapter(
 
     var isDeletingMode = false
 
+    val elements
+    get() = mTaskList.toList()
+
+    val deletingElements
+    get() = mTaskDeletionList.toList()
+
     override fun getItemCount(): Int = mTaskList.count()
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
@@ -34,6 +39,9 @@ class TaskAdapter(
         holder.finishCheckBox.isChecked = element.isFinished
 
         holder.root.setOnLongClickListener {
+            holder.root.setBackgroundResource(R.drawable.background_purple_borders)
+            mTaskDeletionList.add(element)
+
             itemLongClick()
             true
         }
@@ -70,18 +78,37 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 
-    fun addAll(taskList: List<Task>) {
+    private fun resetAdapter() {
+
+        val tasks = mTaskList.toList()
+
         mTaskList.clear()
-        mTaskList.addAll(taskList)
+        mTaskList.addAll(tasks)
+
         notifyDataSetChanged()
     }
 
-    fun deleteElements(taskList: List<Task>) {
+    fun deleteElements(): List<Task> {
         mTaskDeletionList.forEach { task ->
             if (mTaskList.contains(task)) {
                 mTaskList.remove(task)
             }
         }
-        notifyDataSetChanged()
+        val deletedTasks = mTaskDeletionList.toList()
+
+        disableDeletingMode()
+
+        return deletedTasks
+    }
+
+    fun disableDeletingMode() {
+        isDeletingMode = false
+        mTaskDeletionList.clear()
+
+        resetAdapter()
+    }
+
+    fun enterDeletingMode() {
+        isDeletingMode = true
     }
 }
