@@ -32,7 +32,17 @@ class EpicViewModel(application: Application) : AndroidViewModel(application) {
 
     suspend fun updateTask(task: Task) = appDatabase.taskDao().updateTask(task)
 
-    suspend fun deleteTasks(taskList: List<Task>) = appDatabase.taskDao().deleteTasks(taskList)
+    suspend fun deleteTasks(taskList: List<Task>, epicId: UUID) {
+        val epic = appDatabase.epicDao().getEpicById(epicId)
+
+        epic.numberOfTasks -= taskList.count()
+        epic.numberOfCompletedTasks -= taskList.filter { it.isFinished }.count()
+
+        appDatabase.taskDao().deleteTasks(taskList)
+        appDatabase.epicDao().updateEpic(epic)
+
+        _epicLiveData.postValue(epic)
+    }
 
     suspend fun saveNewTask(taskName: String, epicId: UUID) {
         val newTask = Task(

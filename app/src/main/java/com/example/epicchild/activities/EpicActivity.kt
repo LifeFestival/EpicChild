@@ -144,7 +144,7 @@ class EpicActivity : AppCompatActivity() {
                 tasksAdapter.deleteElements()
             }
 
-            viewModel.deleteTasks(taskList)
+            viewModel.deleteTasks(taskList, epicId)
 
             floatDeletingMode(false)
         }

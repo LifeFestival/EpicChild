@@ -38,6 +38,8 @@ class TaskAdapter(
         holder.nameTextView.text = element.name
         holder.finishCheckBox.isChecked = element.isFinished
 
+        holder.root.setBackgroundResource(R.drawable.background_normal)
+
         holder.root.setOnLongClickListener {
             holder.root.setBackgroundResource(R.drawable.background_purple_borders)
             mTaskDeletionList.add(element)
@@ -78,16 +80,6 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 
-    private fun resetAdapter() {
-
-        val tasks = mTaskList.toList()
-
-        mTaskList.clear()
-        mTaskList.addAll(tasks)
-
-        notifyDataSetChanged()
-    }
-
     fun deleteElements(): List<Task> {
         mTaskDeletionList.forEach { task ->
             if (mTaskList.contains(task)) {
@@ -105,7 +97,9 @@ class TaskAdapter(
         isDeletingMode = false
         mTaskDeletionList.clear()
 
-        resetAdapter()
+        notifyDataSetChanged()
+
+//        resetAdapter()
     }
 
     fun enterDeletingMode() {
