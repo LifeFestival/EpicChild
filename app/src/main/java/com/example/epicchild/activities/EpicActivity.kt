@@ -83,6 +83,28 @@ class EpicActivity : AppCompatActivity() {
         epic_description_editText.setText(epic.description)
     }
 
+    private suspend fun initAdapter() {
+
+        withContext(Dispatchers.IO) {
+            val taskList = viewModel.getAllTasks(epicId)
+            tasksAdapter = TaskAdapter(
+                taskList,
+                this@EpicActivity::enterDeletingMode,
+                this@EpicActivity::setTaskFinished
+            )
+        }
+
+        epic_recycler.adapter = tasksAdapter
+        epic_recycler.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        epic_recycler.layoutManager = LinearLayoutManager(this)
+    }
+
     private fun setListeners() {
         epic_description_editText.onFocusChangeListener =
             View.OnFocusChangeListener { _, isFocus ->
@@ -108,32 +130,39 @@ class EpicActivity : AppCompatActivity() {
         })
     }
 
-    private suspend fun initAdapter() {
+    //----------------------Удаление тасок--------------------------
 
-        withContext(Dispatchers.IO) {
-            val taskList = viewModel.getAllTasks(epicId)
-            tasksAdapter = TaskAdapter(
-                taskList,
-                this@EpicActivity::enterDeletingMode,
-                this@EpicActivity::setTaskFinished
-            )
-        }
-
-        epic_recycler.adapter = tasksAdapter
-        epic_recycler.addItemDecoration(
-            DividerItemDecoration(
-                this,
-                DividerItemDecoration.VERTICAL
-            )
-        )
-
-        epic_recycler.layoutManager = LinearLayoutManager(this)
-    }
-
-    //TODO удаление тасок
     private fun enterDeletingMode() {
-        showToast("Режим удаления")
+        tasksAdapter.enterDeletingMode()
+        floatDeletingMode(true)
     }
+
+    private fun deleteTasks() {
+        viewModel.viewModelScope.launch(Dispatchers.IO) {
+
+            val taskList = tasksAdapter.deletingElements
+
+            withContext(Dispatchers.Main) {
+                tasksAdapter.deleteElements()
+            }
+
+            viewModel.deleteTasks(taskList, epicId)
+
+            floatDeletingMode(false)
+        }
+    }
+
+    private fun floatDeletingMode(isDeletingMode: Boolean) {
+        if (!isDeletingMode) {
+            task_add_button.setImageResource(R.drawable.ic_add)
+            task_add_button.setOnClickListener { taskCreatingDialog.show() }
+        } else {
+            task_add_button.setImageResource(R.drawable.ic_delete)
+            task_add_button.setOnClickListener { deleteTasks() }
+        }
+    }
+
+    //----------------------Завершение тасок--------------------------
 
     private fun setTaskFinished(taskId: UUID, isFinished: Boolean, position: Int) {
         viewModel.viewModelScope.launch {
@@ -149,6 +178,8 @@ class EpicActivity : AppCompatActivity() {
             tasksAdapter.notifyItemChanged(position)
         }
     }
+
+    //----------------------Диалог--------------------------
 
     private fun makeTaskCreatingDialog() {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogCustom)
@@ -202,5 +233,12 @@ class EpicActivity : AppCompatActivity() {
         viewModel.viewModelScope.launch(Dispatchers.IO) {
             viewModel.updateEpic(epic)
         }
+    }
+
+    override fun onBackPressed() {
+        if (tasksAdapter.isDeletingMode) {
+            tasksAdapter.disableDeletingMode()
+            floatDeletingMode(false)
+        } else super.onBackPressed()
     }
 }

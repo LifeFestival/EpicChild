@@ -19,6 +19,15 @@ class TaskAdapter(
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
     private val mTaskList = taskList.toMutableList()
+    private val mTaskDeletionList = mutableListOf<Task>()
+
+    var isDeletingMode = false
+
+    val elements
+    get() = mTaskList.toList()
+
+    val deletingElements
+    get() = mTaskDeletionList.toList()
 
     override fun getItemCount(): Int = mTaskList.count()
 
@@ -29,7 +38,12 @@ class TaskAdapter(
         holder.nameTextView.text = element.name
         holder.finishCheckBox.isChecked = element.isFinished
 
+        holder.root.setBackgroundResource(R.drawable.background_normal)
+
         holder.root.setOnLongClickListener {
+            holder.root.setBackgroundResource(R.drawable.background_purple_borders)
+            mTaskDeletionList.add(element)
+
             itemLongClick()
             true
         }
@@ -37,6 +51,16 @@ class TaskAdapter(
         holder.finishCheckBox.setOnClickListener {
             itemFinished(element.id, !element.isFinished, position)
             mTaskList[position].isFinished = !element.isFinished
+        }
+
+        holder.root.setOnClickListener {
+            if (isDeletingMode && !mTaskDeletionList.contains(element)) {
+                mTaskDeletionList.add(element)
+                holder.root.setBackgroundResource(R.drawable.background_purple_borders)
+            } else if (isDeletingMode && mTaskDeletionList.contains(element)) {
+                mTaskDeletionList.remove(element)
+                holder.root.setBackgroundResource(R.drawable.background_normal)
+            }
         }
     }
 
@@ -56,9 +80,28 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 
-    fun addAll(taskList: List<Task>) {
-        mTaskList.clear()
-        mTaskList.addAll(taskList)
+    fun deleteElements(): List<Task> {
+        mTaskDeletionList.forEach { task ->
+            if (mTaskList.contains(task)) {
+                mTaskList.remove(task)
+            }
+        }
+        val deletedTasks = mTaskDeletionList.toList()
+
+        disableDeletingMode()
+
+        return deletedTasks
+    }
+
+    fun disableDeletingMode() {
+        isDeletingMode = false
+        mTaskDeletionList.clear()
+
         notifyDataSetChanged()
+
+    }
+
+    fun enterDeletingMode() {
+        isDeletingMode = true
     }
 }
