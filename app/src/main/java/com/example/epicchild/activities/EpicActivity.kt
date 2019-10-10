@@ -83,6 +83,28 @@ class EpicActivity : AppCompatActivity() {
         epic_description_editText.setText(epic.description)
     }
 
+    private suspend fun initAdapter() {
+
+        withContext(Dispatchers.IO) {
+            val taskList = viewModel.getAllTasks(epicId)
+            tasksAdapter = TaskAdapter(
+                taskList,
+                this@EpicActivity::enterDeletingMode,
+                this@EpicActivity::setTaskFinished
+            )
+        }
+
+        epic_recycler.adapter = tasksAdapter
+        epic_recycler.addItemDecoration(
+            DividerItemDecoration(
+                this,
+                DividerItemDecoration.VERTICAL
+            )
+        )
+
+        epic_recycler.layoutManager = LinearLayoutManager(this)
+    }
+
     private fun setListeners() {
         epic_description_editText.onFocusChangeListener =
             View.OnFocusChangeListener { _, isFocus ->
@@ -108,27 +130,7 @@ class EpicActivity : AppCompatActivity() {
         })
     }
 
-    private suspend fun initAdapter() {
-
-        withContext(Dispatchers.IO) {
-            val taskList = viewModel.getAllTasks(epicId)
-            tasksAdapter = TaskAdapter(
-                taskList,
-                this@EpicActivity::enterDeletingMode,
-                this@EpicActivity::setTaskFinished
-            )
-        }
-
-        epic_recycler.adapter = tasksAdapter
-        epic_recycler.addItemDecoration(
-            DividerItemDecoration(
-                this,
-                DividerItemDecoration.VERTICAL
-            )
-        )
-
-        epic_recycler.layoutManager = LinearLayoutManager(this)
-    }
+    //----------------------Удаление тасок--------------------------
 
     private fun enterDeletingMode() {
         tasksAdapter.enterDeletingMode()
@@ -160,6 +162,8 @@ class EpicActivity : AppCompatActivity() {
         }
     }
 
+    //----------------------Завершение тасок--------------------------
+
     private fun setTaskFinished(taskId: UUID, isFinished: Boolean, position: Int) {
         viewModel.viewModelScope.launch {
             val task = viewModel.getTaskById(taskId)
@@ -174,6 +178,8 @@ class EpicActivity : AppCompatActivity() {
             tasksAdapter.notifyItemChanged(position)
         }
     }
+
+    //----------------------Диалог--------------------------
 
     private fun makeTaskCreatingDialog() {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogCustom)

@@ -99,7 +99,6 @@ class TaskAdapter(
 
         notifyDataSetChanged()
 
-//        resetAdapter()
     }
 
     fun enterDeletingMode() {
