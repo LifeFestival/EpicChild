@@ -37,4 +37,16 @@ class EpicListViewModel(application: Application) : AndroidViewModel(application
         _epicLiveData.postValue(epic)
     }
 
+    suspend fun deleteEpic(epic: Epic) = appDatabase.epicDao().deleteEpic(epic)
+
+    suspend fun deleteEpics(epicList: List<Epic>) {
+
+        epicList.forEach { epic ->
+            val tasks = appDatabase.taskDao().getTaskByEpicId(epic.id)
+
+            appDatabase.taskDao().deleteTasks(tasks)
+            appDatabase.epicDao().deleteEpic(epic)
+        }
+    }
+
 }

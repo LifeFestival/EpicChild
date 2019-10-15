@@ -89,7 +89,7 @@ class EpicActivity : AppCompatActivity() {
             val taskList = viewModel.getAllTasks(epicId)
             tasksAdapter = TaskAdapter(
                 taskList,
-                this@EpicActivity::enterDeletingMode,
+                this@EpicActivity::floatDeletingMode,
                 this@EpicActivity::setTaskFinished
             )
         }
@@ -131,11 +131,6 @@ class EpicActivity : AppCompatActivity() {
     }
 
     //----------------------Удаление тасок--------------------------
-
-    private fun enterDeletingMode() {
-        tasksAdapter.enterDeletingMode()
-        floatDeletingMode(true)
-    }
 
     private fun deleteTasks() {
         viewModel.viewModelScope.launch(Dispatchers.IO) {

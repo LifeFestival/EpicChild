@@ -1,6 +1,5 @@
 package com.example.epicchild.adapters
 
-import android.graphics.drawable.Drawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,10 +14,19 @@ import java.util.*
 class EpicAdapter(
     epicList: List<Epic>,
     private val itemClick: (epicId: UUID) -> Unit,
-    private val itemLongClick: () -> Unit
+    private val itemLongClick: (isDeleting: Boolean) -> Unit
 ) : RecyclerView.Adapter<EpicAdapter.EpicViewHolder>() {
 
     private val mEpicList = epicList.toMutableList()
+    private val mEpicDeletingList = mutableListOf<Epic>()
+
+    var isDeletingMode = false
+
+    val elements
+        get() = mEpicList.toList()
+
+    val deletingElements
+        get() = mEpicDeletingList.toList()
 
     override fun getItemCount(): Int = mEpicList.count()
 
@@ -27,21 +35,45 @@ class EpicAdapter(
         val element = mEpicList[position]
         val counterString = "${element.numberOfCompletedTasks}/${element.numberOfTasks}"
 
+        holder.root.setBackgroundResource(R.drawable.background_normal)
+
         holder.nameTextView.text = element.name
         holder.counterTextView.text = counterString
 
         when {
             element.numberOfCompletedTasks == 0 -> holder.iconView.setImageResource(R.drawable.ic_sleeping)
-            element.numberOfCompletedTasks == element.numberOfTasks -> holder.iconView.setImageResource(R.drawable.ic_done_outline)
+            element.numberOfCompletedTasks == element.numberOfTasks -> holder.iconView.setImageResource(
+                R.drawable.ic_done_outline
+            )
 
             else -> holder.iconView.setImageResource(R.drawable.ic_rowing)
         }
 
         //Listeners
         holder.root.apply {
-            setOnClickListener { itemClick(element.id) }
+            setOnClickListener {
+                when {
+                    isDeletingMode && !mEpicDeletingList.contains(element) -> {
+                        mEpicDeletingList.add(element)
+                        holder.root.setBackgroundResource(R.drawable.background_purple_borders)
+                    }
+
+                    isDeletingMode && mEpicDeletingList.contains(element) -> {
+                        mEpicDeletingList.remove(element)
+                        holder.root.setBackgroundResource(R.drawable.background_normal)
+                    }
+
+                    else -> itemClick(element.id)
+                }
+            }
+
             setOnLongClickListener {
-                itemLongClick
+                isDeletingMode = true
+
+                holder.root.setBackgroundResource(R.drawable.background_purple_borders)
+                mEpicDeletingList.add(element)
+
+                itemLongClick(isDeletingMode)
                 true
             }
         }
@@ -74,6 +106,21 @@ class EpicAdapter(
     fun addAll(epicList: List<Epic>) {
         mEpicList.clear()
         mEpicList.addAll(epicList)
+        notifyDataSetChanged()
+    }
+
+    fun deleteElements() {
+        mEpicDeletingList.forEach { epic ->
+            if (mEpicList.contains(epic)) mEpicList.remove(epic)
+        }
+
+        disableDeletingMode()
+    }
+
+    private fun disableDeletingMode() {
+        isDeletingMode = false
+        mEpicDeletingList.clear()
+
         notifyDataSetChanged()
     }
 }
