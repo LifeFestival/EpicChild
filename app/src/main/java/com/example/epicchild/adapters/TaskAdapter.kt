@@ -14,7 +14,7 @@ import java.util.*
 
 class TaskAdapter(
     taskList: List<Task>,
-    private val itemLongClick: () -> Unit,
+    private val itemLongClick: (isDeleting: Boolean) -> Unit,
     private val itemFinished: (taskId: UUID, isChecked: Boolean, position: Int) -> Unit
 ) : RecyclerView.Adapter<TaskAdapter.TaskViewHolder>() {
 
@@ -41,10 +41,13 @@ class TaskAdapter(
         holder.root.setBackgroundResource(R.drawable.background_normal)
 
         holder.root.setOnLongClickListener {
+
+            isDeletingMode = true
+
             holder.root.setBackgroundResource(R.drawable.background_purple_borders)
             mTaskDeletionList.add(element)
 
-            itemLongClick()
+            itemLongClick(isDeletingMode)
             true
         }
 
@@ -80,17 +83,14 @@ class TaskAdapter(
         notifyDataSetChanged()
     }
 
-    fun deleteElements(): List<Task> {
+    fun deleteElements() {
         mTaskDeletionList.forEach { task ->
             if (mTaskList.contains(task)) {
                 mTaskList.remove(task)
             }
         }
-        val deletedTasks = mTaskDeletionList.toList()
 
         disableDeletingMode()
-
-        return deletedTasks
     }
 
     fun disableDeletingMode() {
@@ -101,7 +101,4 @@ class TaskAdapter(
 
     }
 
-    fun enterDeletingMode() {
-        isDeletingMode = true
-    }
 }

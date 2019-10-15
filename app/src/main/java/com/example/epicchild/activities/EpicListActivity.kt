@@ -59,7 +59,7 @@ class EpicListActivity : AppCompatActivity() {
             epicListAdapter = EpicAdapter(
                 epicList,
                 this@EpicListActivity::startEpicActivity,
-                this@EpicListActivity::enterDeletingMode
+                this@EpicListActivity::floatingDeletingMode
                 )
         }
 
@@ -88,6 +88,7 @@ class EpicListActivity : AppCompatActivity() {
         })
     }
 
+    //----------------------Диалог--------------------------
 
     private fun makeEpicCreatingDialog() {
         val builder = AlertDialog.Builder(this, R.style.AlertDialogCustom)
@@ -134,9 +135,30 @@ class EpicListActivity : AppCompatActivity() {
         startActivity(EpicActivity.newIntent(this, epicId))
     }
 
-    //TODO удаление эпиков
-    private fun enterDeletingMode() {
-        showToast("Режим удаления")
+    //----------------------Удаление эпиков--------------------------
+
+    private fun deleteEpics() {
+        viewModel.viewModelScope.launch(Dispatchers.IO) {
+            val epicList = epicListAdapter.deletingElements
+
+            withContext(Dispatchers.Main) {
+                epicListAdapter.deleteElements()
+            }
+
+            viewModel.deleteEpics(epicList)
+
+            floatingDeletingMode(false)
+        }
+    }
+
+    private fun floatingDeletingMode(isDeleting: Boolean) {
+        if (!isDeleting) {
+            epic_list_add_button.setImageResource(R.drawable.ic_add)
+            epic_list_add_button.setOnClickListener { epicCreatingDialog.show() }
+        } else {
+            epic_list_add_button.setImageResource(R.drawable.ic_delete)
+            epic_list_add_button.setOnClickListener { deleteEpics() }
+        }
     }
 
     override fun onResume() {
