@@ -117,7 +117,7 @@ class EpicAdapter(
         disableDeletingMode()
     }
 
-    private fun disableDeletingMode() {
+    fun disableDeletingMode() {
         isDeletingMode = false
         mEpicDeletingList.clear()
 

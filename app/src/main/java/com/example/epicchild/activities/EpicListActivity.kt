@@ -169,4 +169,11 @@ class EpicListActivity : AppCompatActivity() {
             epicListAdapter.addAll(epics)
         }
     }
+
+    override fun onBackPressed() {
+        if (epicListAdapter.isDeletingMode) {
+            epicListAdapter.disableDeletingMode()
+            floatingDeletingMode(false)
+        } else super.onBackPressed()
+    }
 }
